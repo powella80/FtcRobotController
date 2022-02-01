@@ -19,6 +19,6 @@ public class TestTeleop extends OpMode {
         float rightPower = -gamepad1.right_stick_y;
         float leftPower = -gamepad1.left_stick_y;
         r.setPower(leftPower, rightPower);
-        r.printEncoders();
+        r.printState();
     }
 }
