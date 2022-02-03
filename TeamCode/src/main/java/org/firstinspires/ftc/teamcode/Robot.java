@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import java.util.ArrayList;
+// 384.5 = 0.53m = 1 rev
 
 public class Robot {
     private HardwareMap hw;
@@ -123,6 +124,21 @@ public class Robot {
                 this.printState();
             }
         }
+        setPower(0,0);
+    }
+
+    public void forward(double distance, float power){
+
+        goalEncoders = distance / 0.53 * 384.5;
+
+       // resetEncoders();
+        startEncoders();
+        while (frontL.getCurrentPosition() < goalEncoders) {
+            this.setPower(power, power);
+            t.addData("Goal Encoders: ", goalEncoders);
+            this.printState();
+        }
+
         setPower(0,0);
     }
 
