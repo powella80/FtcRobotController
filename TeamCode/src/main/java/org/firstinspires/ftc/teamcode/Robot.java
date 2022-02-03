@@ -6,9 +6,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
-
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 import java.util.ArrayList;
 
 public class Robot {
@@ -19,12 +17,13 @@ public class Robot {
     private DcMotorEx frontL;
     private DcMotorEx backR;
     private DcMotorEx backL;
+    private double goalEncoders;
 
     private ArrayList<DcMotorEx> motors;
     // frontL, frontR, backL, backR
    // private int encoderValues [] = {0,0,0,0};
 
-    private final int FULL_TURN_ENCODERS = 1150;
+    private final int FULL_TURN_ENCODERS = 900;
 
 //    private DcMotorEx turret;
 //    private DcMotorEx slide;
@@ -85,6 +84,7 @@ public class Robot {
     }
 
     public void printState(){
+        t.addData("Encoders Goal: ", goalEncoders);
         t.addData("FRP: ", frontR.getPower());
         t.addData("FLP: ", frontL.getPower());
         t.addData("BRP: ", backR.getPower());
@@ -104,28 +104,26 @@ public class Robot {
         motors.add(backL);
     }
 
-    public void turn(int degrees, float power){
-//        int frac = degrees/360;
-//        int encoderTicks = frac * FULL_TURN_ENCODERS;
-        int encoderTicks = 5000;
+    public void turn(double degrees, float power){
+        double frac = degrees/360.0;
+        goalEncoders = frac * FULL_TURN_ENCODERS;
+
         resetEncoders();
         startEncoders();
-//        frontL.setTargetPosition(encoderTicks);
-//        frontL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-     //   this.setPower(power, -power);
-//        while(frontL.isBusy()){
-//            this.setPower(power, 0);
-//            this.printState();
-//        }
-        while(encoderTicks > 0 ? frontL.getCurrentPosition() < encoderTicks: frontL.getCurrentPosition() > encoderTicks){
-            this.setPower(power, -power);
-            this.printState();
+        if(goalEncoders > 0) {
+            while (frontL.getCurrentPosition() < goalEncoders) {
+                t.addData("frac: ", frac);
+                this.setPower(power, -power);
+                this.printState();
+            }
+        } else {
+            while (frontL.getCurrentPosition() > goalEncoders) {
+                t.addData("frac: ", frac);
+                this.setPower(-power, power);
+                this.printState();
+            }
         }
-
-//        stopEncoders();
-        resetEncoders();
-       // setPower(0,0);
+        setPower(0,0);
     }
 
     private void stopEncoders(){

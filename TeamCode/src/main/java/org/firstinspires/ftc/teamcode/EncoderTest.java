@@ -30,7 +30,7 @@ public class EncoderTest extends OpMode {
             r.printState();
         }
         if(gamepad1.b){
-            r.turn(90, 0.5f);
+            r.turn(-360, 0.5f);
             r.printState();
         }
 
